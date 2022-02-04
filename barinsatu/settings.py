@@ -2,11 +2,14 @@ from calendar import month
 from pathlib import Path
 from datetime import timedelta
 
+from django.conf import settings
+# from .storage_backends import PublicMediaStorage
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = 'django-insecure-&*q75gpd1-gcuky!daoum#3%8u8oo^oxsk^6py=in6)9b8vo9d'
 
-DEBUG = True
+DEBUG = False
 ALLOWED_HOSTS = ['*']
 
 INSTALLED_APPS = [
@@ -18,6 +21,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework_simplejwt',
+    'storages',
+    'django_filters',
     'rest_framework',
     'authentication',
     'ad',
@@ -114,10 +119,14 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
 REST_FRAMEWORK = {
+    'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend'],
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
-    )
+    ),
+    'PAGE_SIZE': 5
+    
 }
+
 
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(days=10),
@@ -126,6 +135,26 @@ SIMPLE_JWT = {
     'BLACKLIST_AFTER_ROTATION': False,
     'UPDATE_LAST_LOGIN': False,
 }
+
+if settings.DEBUG:
+    MEDIA_URL = '/media/'
+    MEDIA_ROOT = BASE_DIR / 'media'
+
+else:    
+    AWS_ACCESS_KEY_ID = 'AKIATPRWSA2QHVKOPIO6'
+    AWS_SECRET_ACCESS_KEY = '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'
+    AWS_STORAGE_BUCKET_NAME = 'barinsatudjango'
+    # AWS_S3_SIGNATURE_VERSION = 's3v4'
+    AWS_S3_REGION_NAME = 'eu-central-1'
+    AWS_S3_FILE_OVERWRITE = False
+    AWS_DEFAULT_ACL = None
+    AWS_S3_VERIFY = True
+    # AWS_DEFAULT_ACL = 'public-read'
+    AWS_S3_ADDRESSING_STYLE = "virtual"
+
+    AWS_PUBLIC_MEDIA_LOCATION = 'media/public'
+
+    DEFAULT_FILE_STORAGE = 'barinsatu.storage_backends.PublicMediaStorage'
 
 AUTH_USER_MODEL = 'authentication.User'
 

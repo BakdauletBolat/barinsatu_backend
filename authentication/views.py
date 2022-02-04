@@ -4,8 +4,9 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.views import APIView
 from authentication.models import User
 from django.contrib.auth.mixins import LoginRequiredMixin
-from authentication.serializers import UserSerializer
+from authentication.serializers import UserLoginSerializer, UserSerializer
 from rest_framework import status
+from rest_framework_simplejwt.views import TokenObtainPairView
 
 def get_tokens_for_user(user):
     refresh = RefreshToken.for_user(user)
@@ -16,6 +17,10 @@ def get_tokens_for_user(user):
         "access": str(refresh.access_token),
     }
 
+
+class UserLoginView(TokenObtainPairView):
+
+    serializer_class = UserLoginSerializer
 
 class UserCreateListView(ListCreateAPIView):
     serializer_class = UserSerializer
@@ -41,6 +46,6 @@ class UserMe(APIView,LoginRequiredMixin):
 
     def get(self,request):
         if request.user.is_authenticated:
-            user = UserSerializer(request.user)
-            return JsonResponse({"user": user.data})
-        return JsonResponse({"detail":"user is not authenticated"})
+            user = UserSerializer(request.user,context={"request":request})
+            return JsonResponse({"user":user.data})
+        return JsonResponse({"detail":"user is not authenticated"},status=status.HTTP_401_UNAUTHORIZED)

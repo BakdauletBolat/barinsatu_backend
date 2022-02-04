@@ -1,11 +1,41 @@
 from django.forms import fields
-from .models import Ad, AdImage, AdType, AreaDetail, HomeDetail, RentType, RepairType, BuildingType, AdDetailType, City
+from .models import (Ad, AdComments, AdImage, AdLike, AdType, AreaDetail,
+             Communications, HomeDetail, RentType, RepairType, BuildingType,
+             AdDetailType, City,ApartmentDetail)
 from rest_framework import serializers
 from django.contrib.contenttypes.models import ContentType
 from authentication.serializers import UserSerializer
 
 
+class BuildingTypeSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = BuildingType
+        fields = ('__all__')
+
+class CommunicationSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Communications
+        fields = ('__all__')
+
+class RepairTypeSerializer(serializers.ModelSerializer):
+    class Meta:
+
+        model = RepairType
+        fields = ('__all__')
+
+class RentTypeSerializer(serializers.ModelSerializer):
+    class Meta:
+
+        model = RentType
+        fields = ('__all__')    
+
 class HomeDetailSerializer(serializers.ModelSerializer):
+
+
+    building_type = BuildingTypeSerializer()
+    repair_type = RepairTypeSerializer()
 
     class Meta:
 
@@ -15,9 +45,21 @@ class HomeDetailSerializer(serializers.ModelSerializer):
 
 class AreaDetailSerializer(serializers.ModelSerializer):
 
+    communications = CommunicationSerializer(many=True)
+
     class Meta:
 
         model = AreaDetail
+        fields = ('__all__')
+
+
+class ApartmentSerializer(serializers.ModelSerializer):
+
+    building_type = BuildingTypeSerializer()
+    repair_type = RepairTypeSerializer()
+
+    class Meta:
+        model = ApartmentDetail
         fields = ('__all__')
 
 
@@ -28,13 +70,16 @@ class AdObjectRelatedField(serializers.RelatedField):
         elif isinstance(value, AreaDetail):
             return AreaDetailSerializer(value).data
 
+        elif isinstance(value, ApartmentDetail):
+            return ApartmentSerializer(value).data
+
         raise Exception('Unexpected type of tagged object')
 
 
 class AdDetailTypeSerializer(serializers.ModelSerializer):
 
     class Meta:
-        fields = ('id','name',)
+        fields = ('id','name','title')
         model = AdDetailType
 
 
@@ -58,45 +103,57 @@ class AdImageSerializer(serializers.ModelSerializer):
         fields = ('id','image')
         model = AdImage
 
+
+class IsLikedSerializer(serializers.ListSerializer):
+    def to_representation(self, data):
+        data = data.filter(isLiked=True)
+        return super(IsLikedSerializer, self).to_representation(data)
+
+class AdLikeSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        fields = ('__all__')
+        model = AdLike
+        list_serializer_class = IsLikedSerializer 
+
+
 class AdSerializer(serializers.ModelSerializer):
 
     details = AdObjectRelatedField(read_only=True)
-
     images = AdImageSerializer(read_only=True,many=True)
-
     # Детальная информация
-    ad_detail_type = AdDetailTypeSerializer(required=False)
-    ad_detail_type_id = serializers.IntegerField()
-
+    ad_detail_type_id = serializers.IntegerField(write_only=True)
+    ad_detail_type = AdDetailTypeSerializer(read_only=True)
     # Продажа или аренда
-    ad_type_id = serializers.IntegerField()
-    ad_type = AdTypeSerializer(required=False)
-
+    ad_type_id = serializers.IntegerField(write_only=True)
+    ad_type = AdTypeSerializer(read_only=True)
     # Город
-    city_id = serializers.IntegerField()
-    city = CitySerializer(required=False)
-
+    city_id = serializers.IntegerField(write_only=True)
+    city = CitySerializer(read_only=True)
     # Автор
-    author_id = serializers.IntegerField()
-    author = UserSerializer(required=False)
+    author_id = serializers.IntegerField(write_only=True)
+    author = UserSerializer(read_only=True)
+
+    likes = AdLikeSerializer(many=True,read_only=True)
 
     # Дом детальная
     numbers_room = serializers.IntegerField(required=False)
     total_area = serializers.IntegerField(required=False)
     floor = serializers.IntegerField(required=False)
+    total_floor = serializers.IntegerField(required=False)
     year_construction = serializers.IntegerField(required=False)
     repair_type_id = serializers.IntegerField(required=False)
     building_type_id = serializers.IntegerField(required=False)
+    communications = serializers.ListField(required=False)
+    is_pledge = serializers.BooleanField(required=False)
+    is_divisibility = serializers.BooleanField(required=False)
 
-    # Участок
-    area = serializers.IntegerField(required=False)
 
     def create(self, validated_data):
-        print(validated_data)
         detail = AdDetailType.objects.get(
             id=validated_data.get('ad_detail_type_id'))
 
-        if detail.name == 'homedetail':
+        if detail.title == 'homedetail':
 
             try:
                 numbers_room = validated_data.pop('numbers_room')
@@ -136,20 +193,93 @@ class AdSerializer(serializers.ModelSerializer):
                 repair_type_id=repair_type_id,
                 building_type_id=building_type_id,
             )
-        elif detail.name == 'areadetail':
-            try:
-                area = validated_data.pop('area')
-            except KeyError:
-                area = None
+        elif detail.title == 'apartmentdetail':
 
-            detail = AreaDetail.objects.create(
-                area=area
+            try:
+                numbers_room = validated_data.pop('numbers_room')
+            except KeyError:
+                numbers_room = None
+
+            try:
+                total_area = validated_data.pop('total_area')
+            except KeyError:
+                total_area = None
+
+            try:
+                floor = validated_data.pop('floor')
+            except KeyError:
+                floor = None
+
+            try:
+                year_construction = validated_data.pop('year_construction')
+            except KeyError:
+                year_construction = None
+
+            try:
+                repair_type_id = validated_data.pop('repair_type_id')
+            except KeyError:
+                repair_type_id = 1
+
+            try:
+                building_type_id = validated_data.pop('building_type_id')
+            except KeyError:
+                building_type_id = 1
+
+            try:
+                total_floor = validated_data.pop('total_floor')
+            except KeyError:
+                total_floor = None
+
+            detail = HomeDetail.objects.create(
+                numbers_room=numbers_room,
+                total_area=total_area,
+                floor=floor,
+                total_floor=total_floor,
+                year_construction=year_construction,
+                repair_type_id=repair_type_id,
+                building_type_id=building_type_id,
             )
+        elif detail.title == 'areadetail':
+            try:
+                total_area = validated_data.pop('total_area')
+            except KeyError:
+                total_area = None
+
+            try:
+                is_pledge = validated_data.pop('is_pledge')
+            except KeyError:
+                is_pledge = 0
+
+            try:
+                is_divisibility = validated_data.pop('is_divisibility')
+            except KeyError:
+                is_divisibility = 0
+
+            
+            
+            detail = AreaDetail.objects.create(
+                total_area=total_area,
+                is_pledge=is_pledge,
+                is_divisibility=is_divisibility,
+            )
+
+            try:
+                communications = validated_data.pop('communications')
+                print(communications)
+                for c in communications:  
+                    cObject = Communications.objects.get(id=c) 
+                    detail.communications.add(cObject)
+            except KeyError:
+                communications = None
+
         else:
             detail = None
 
         instance = Ad.objects.create(
             title=validated_data['title'],
+            location_text=validated_data['location_text'] or 'Место положение не указано',
+            lat=validated_data['lat'] or 0,
+            lng=validated_data['lng'] or 0,
             description=validated_data['description'],
             ad_detail_type_id=validated_data['ad_detail_type_id'],
             ad_type_id=validated_data['ad_type_id'],
@@ -172,3 +302,11 @@ class ContentTypeSerializer(serializers.ModelSerializer):
 
         fields = ('__all__')
         model = ContentType
+
+
+
+class AdCommentSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        fields = ('__all__')
+        model = AdComments

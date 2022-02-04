@@ -1,9 +1,10 @@
-from statistics import mode
-from tabnanny import verbose
+
 from django.db import models
 from authentication.models import User
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
+from django.contrib.contenttypes.fields import GenericRelation
+from django.utils.html import mark_safe
 
 class AdType(models.Model):
 
@@ -18,6 +19,7 @@ class AdType(models.Model):
 
 class AdDetailType(models.Model):
     
+    title = models.CharField(max_length=255)
     name = models.CharField(max_length=255)
 
     def __str__(self):
@@ -84,12 +86,13 @@ class HomeDetail(models.Model):
     total_area = models.IntegerField(null=True,blank=True)
     floor = models.IntegerField(null=True,blank=True)
     year_construction = models.IntegerField(null=True,blank=True)
-    building_type = models.ForeignKey(BuildingType,on_delete=models.CASCADE)
-    repair_type = models.ForeignKey(RepairType,on_delete=models.CASCADE)
+    building_type = models.ForeignKey(BuildingType,on_delete=models.CASCADE,null=True,blank=True)
+    repair_type = models.ForeignKey(RepairType,on_delete=models.CASCADE,null=True,blank=True)
+    ad = GenericRelation('Ad',related_query_name='homedetail')
 
-    def __str__(self):
+    # def __str__(self):
 
-        return self.building_type.name
+    #     return self.building_type.name
 
     class Meta:
         
@@ -97,12 +100,34 @@ class HomeDetail(models.Model):
         verbose_name_plural = 'Дом дополнение публикаций'
 
 
+class Communications(models.Model):
+
+    name = models.CharField(max_length=255)
+
+    def __str__(self) -> str:
+        return self.name
+
+
+class ApartmentDetail(models.Model):
+    numbers_room = models.IntegerField(null=True,blank=True)
+    total_area = models.IntegerField(null=True,blank=True)
+    floor = models.IntegerField(null=True,blank=True)
+    total_floor = models.IntegerField(null=True,blank=True)
+    year_construction = models.IntegerField(null=True,blank=True)
+    building_type = models.ForeignKey(BuildingType,on_delete=models.CASCADE,null=True,blank=True)
+    repair_type = models.ForeignKey(RepairType,on_delete=models.CASCADE,null=True,blank=True)
+    ad = GenericRelation('Ad',related_query_name='apartmentdetail')
+
 class AreaDetail(models.Model):
     
-    area = models.IntegerField(null=True,blank=True)
+    total_area = models.IntegerField(null=True,blank=True)
+    is_pledge = models.BooleanField(default=0)
+    is_divisibility = models.BooleanField(default=0)
+    communications = models.ManyToManyField(Communications,blank=True)
+    ad = GenericRelation('Ad',related_query_name='areadetail')
 
     def __str__(self):
-        return self.area
+        return f'{self.total_area}'
 
     class Meta:
         
@@ -129,6 +154,9 @@ class Ad(models.Model):
     lat = models.FloatField(null=True,blank=True)
     lng = models.FloatField(null=True,blank=True)
 
+    created_at = models.DateTimeField(auto_now_add=True,null=True,blank=True)
+    updated_at = models.DateTimeField(auto_now=True,null=True,blank=True)
+
     author = models.ForeignKey(User,on_delete=models.CASCADE,related_name='ads')
 
     def __str__(self):
@@ -141,10 +169,44 @@ class Ad(models.Model):
         verbose_name_plural = 'Публикаций'
 
 
+
+class AdLike(models.Model):
+
+    user = models.ForeignKey(User,on_delete=models.CASCADE,related_name='likes')
+    ad = models.ForeignKey(Ad,on_delete=models.CASCADE,related_name='likes')
+    created_at = models.DateTimeField(auto_now_add=True,null=True,blank=True)
+    isLiked = models.BooleanField(default=True)
+    class Meta:
+        verbose_name = 'Лайк для Публикаций'
+        verbose_name_plural = 'Лайк для Публикаций'
+        constraints = [
+            models.UniqueConstraint(fields=['user', 'ad'], name="unique_like"),
+        ]
+        
+
+
+class AdComments(models.Model):
+
+    text = models.TextField()
+    author = models.ForeignKey(User,on_delete=models.CASCADE,related_name='comments')
+    ad = models.ForeignKey(Ad,on_delete=models.CASCADE,related_name='comments')
+
+    class Meta:
+
+        verbose_name = 'Коммент для Публикаций'
+        verbose_name_plural = 'Комменты для Публикаций'
+
+
 class AdImage(models.Model):
 
     image = models.ImageField(upload_to='AdImage/')
+    
     ad = models.ForeignKey(Ad,on_delete=models.CASCADE,related_name='images')
+    
+    def image_tag(self):
+            return mark_safe('<img src="%s" width="150" height="150" />' % (self.image.url))
+    
+    image_tag.short_description = 'Image'
 
     class Meta:
 
