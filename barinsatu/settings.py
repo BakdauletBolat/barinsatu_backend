@@ -7,7 +7,7 @@ import os
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-import conf
+import barinsatu.conf as conf
 if conf.DEBUG:
     DEBUG = True
 else:
@@ -16,7 +16,6 @@ else:
 
 SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY','djaasdasd&*q7vgpd1-gcuky!daosvua#sa3d%asas8auda8^sdosdaksds^6py=in6)9b8vo9d')
 
-DEBUG = True
 ALLOWED_HOSTS = ['*']
 
 INSTALLED_APPS = [
