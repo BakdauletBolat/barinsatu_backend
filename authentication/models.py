@@ -29,6 +29,7 @@ class User(AbstractBaseUser):
     name = models.CharField(max_length=255,null=True,blank=True)
     surname = models.CharField(max_length=255,null=True,blank=True)
     about = models.TextField(null=True,blank=True)
+    phone = models.TextField(null=True,blank=True)
 
 
     USERNAME_FIELD = 'email'
