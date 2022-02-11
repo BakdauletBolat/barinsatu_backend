@@ -54,6 +54,7 @@ class AdFilter(FilterSet):
         model = Ad
         fields = {
             'ad_type': ['exact'],
+            'author': ['exact'],
             'ad_detail_type': ['exact'],
             'price': ['range'],
             'homedetail__numbers_room': ['range'],
@@ -80,6 +81,12 @@ class AdListView(ListAPIView):
     ordering_fields = ['id']
     pagination_class = LimitOffsetPagination
     pagination_class.default_limit =5
+
+
+class AdListMapView(ListAPIView):
+    serializer_class = AdSerializer
+    queryset = Ad.objects.all()
+
 
 
 
