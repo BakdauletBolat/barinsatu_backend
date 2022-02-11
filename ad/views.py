@@ -79,6 +79,7 @@ class AdListView(ListAPIView):
     filter_class = AdFilter
     ordering_fields = ['id']
     pagination_class = LimitOffsetPagination
+    pagination_class.default_limit =5
 
 
 

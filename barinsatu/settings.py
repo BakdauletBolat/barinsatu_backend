@@ -1,13 +1,20 @@
 from calendar import month
 from pathlib import Path
 from datetime import timedelta
+import os
 
-from django.conf import settings
 # from .storage_backends import PublicMediaStorage
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = 'django-insecure-&*q75gpd1-gcuky!daoum#3%8u8oo^oxsk^6py=in6)9b8vo9d'
+import conf
+if conf.DEBUG:
+    DEBUG = True
+else:
+    DEBUG = False
+
+
+SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY','djaasdasd&*q7vgpd1-gcuky!daosvua#sa3d%asas8auda8^sdosdaksds^6py=in6)9b8vo9d')
 
 DEBUG = True
 ALLOWED_HOSTS = ['*']
@@ -65,10 +72,21 @@ WSGI_APPLICATION = 'barinsatu.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
-DATABASES = {
+if DEBUG:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
+else:
+    DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'barinsatu',
+        'USER': 'bakdaulet',
+        'PASSWORD': 'baguvix123FFF',
+        'HOST': 'localhost',
     }
 }
 
@@ -104,10 +122,10 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
 STATIC_URL = '/static/'
-
-STATICFILES_DIRS = [
-    BASE_DIR / "static",
-]
+STATIC_ROOT = BASE_DIR / 'static'
+# STATICFILES_DIRS = [
+#     BASE_DIR / "static",
+# ]
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
@@ -123,28 +141,27 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
-    'PAGE_SIZE': 5
+    # 'PAGE_SIZE': 5
     
 }
 
 
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(days=10),
+    'ACCESS_TOKEN_LIFETIME': timedelta(days=30),
     'REFRESH_TOKEN_LIFETIME': timedelta(weeks=30),
     'ROTATE_REFRESH_TOKENS': False,
     'BLACKLIST_AFTER_ROTATION': False,
-    'UPDATE_LAST_LOGIN': False,
+    'UPDATE_LAST_LOGIN': True,
 }
 
-if settings.DEBUG:
+if DEBUG:
     MEDIA_URL = '/media/'
     MEDIA_ROOT = BASE_DIR / 'media'
 
 else:    
-    AWS_ACCESS_KEY_ID = 'AKIATPRWSA2QHVKOPIO6'
-    AWS_SECRET_ACCESS_KEY = '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'
-    AWS_STORAGE_BUCKET_NAME = 'barinsatudjango'
-    # AWS_S3_SIGNATURE_VERSION = 's3v4'
+    AWS_ACCESS_KEY_ID = conf.AWS_ACCESS_KEY_ID
+    AWS_SECRET_ACCESS_KEY = conf.AWS_SECRET_ACCESS_KEY
+    AWS_STORAGE_BUCKET_NAME = conf.AWS_STORAGE_BUCKET_NAME
     AWS_S3_REGION_NAME = 'eu-central-1'
     AWS_S3_FILE_OVERWRITE = False
     AWS_DEFAULT_ACL = None
@@ -159,3 +176,12 @@ else:
 AUTH_USER_MODEL = 'authentication.User'
 
 CORS_ALLOW_ALL_ORIGINS = True
+
+
+
+
+
+
+
+
+
