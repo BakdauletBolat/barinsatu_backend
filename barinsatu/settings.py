@@ -71,23 +71,23 @@ WSGI_APPLICATION = 'barinsatu.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
-if DEBUG:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': BASE_DIR / 'db.sqlite3',
-        }
-    }
-else:
-    DATABASES = {
+# if DEBUG:
+DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'barinsatu',
-        'USER': 'bakdaulet',
-        'PASSWORD': 'baguvix123FFF',
-        'HOST': 'localhost',
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
+# else:
+#     DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql_psycopg2',
+#         'NAME': 'barinsatu',
+#         'USER': 'bakdaulet',
+#         'PASSWORD': 'baguvix123FFF',
+#         'HOST': 'localhost',
+#     }
+# }
 
 
 
@@ -163,10 +163,10 @@ else:
     AWS_STORAGE_BUCKET_NAME = conf.AWS_STORAGE_BUCKET_NAME
     AWS_S3_REGION_NAME = 'eu-central-1'
     AWS_S3_FILE_OVERWRITE = False
-    AWS_DEFAULT_ACL = None
-    AWS_S3_VERIFY = True
-    # AWS_DEFAULT_ACL = 'public-read'
-    AWS_S3_ADDRESSING_STYLE = "virtual"
+    AWS_QUERYSTRING_AUTH = False
+    # AWS_DEFAULT_ACL = None
+    AWS_DEFAULT_ACL = 'public-read'
+    # AWS_S3_ADDRESSING_STYLE = None
 
     AWS_PUBLIC_MEDIA_LOCATION = 'media/public'
 
