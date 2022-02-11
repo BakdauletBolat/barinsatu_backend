@@ -1,12 +1,17 @@
 from django.http import JsonResponse
-from rest_framework.generics import ListCreateAPIView
+from rest_framework.generics import ListCreateAPIView,RetrieveUpdateDestroyAPIView,RetrieveAPIView
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.views import APIView
-from authentication.models import User
+from .permisions import AuthorPermission
+from authentication.models import User, UserType
 from django.contrib.auth.mixins import LoginRequiredMixin
-from authentication.serializers import UserLoginSerializer, UserSerializer
+from authentication.serializers import UserLoginSerializer, UserSerializer, UserTypeSerializer
 from rest_framework import status
 from rest_framework_simplejwt.views import TokenObtainPairView
+from rest_framework.generics import ListAPIView
+from rest_framework.filters import OrderingFilter
+from django_filters.rest_framework import DjangoFilterBackend
+
 
 def get_tokens_for_user(user):
     refresh = RefreshToken.for_user(user)
@@ -40,6 +45,32 @@ class UserCreateListView(ListCreateAPIView):
         data = get_tokens_for_user(user)
 
         return JsonResponse(data, status=status.HTTP_201_CREATED, headers=headers)
+
+
+class UserRetriveView(RetrieveAPIView):
+    serializer_class = UserSerializer
+    queryset = User.objects.all()
+
+class UserTypeListView(ListAPIView):
+    serializer_class = UserTypeSerializer
+    queryset = UserType.objects.all()
+
+
+class UserRetrieveUpdateDestroyAPIView(RetrieveUpdateDestroyAPIView):
+
+    serializer_class = UserSerializer
+    permission_classes = [AuthorPermission]
+    queryset = User.objects.all()
+
+class UserListView(ListAPIView):
+
+    serializer_class = UserSerializer
+    queryset = User.objects.all()
+    filter_backends = [OrderingFilter,DjangoFilterBackend]
+    filterset_fields = ['user_type_id']
+    ordering_fields = ['id']
+
+
 
 
 class UserMe(APIView,LoginRequiredMixin):

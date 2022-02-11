@@ -116,6 +116,14 @@ class AdLikeSerializer(serializers.ModelSerializer):
         model = AdLike
         list_serializer_class = IsLikedSerializer 
 
+class AdCommentSerializer(serializers.ModelSerializer):
+
+    author = UserSerializer(read_only=True)
+
+    class Meta:
+        fields = ('__all__')
+        read_only_fields = ('author',)
+        model = AdComments
 
 class AdSerializer(serializers.ModelSerializer):
 
@@ -130,15 +138,16 @@ class AdSerializer(serializers.ModelSerializer):
     # Город
     city_id = serializers.IntegerField(write_only=True)
     city = CitySerializer(read_only=True)
+
     # Автор
-    author_id = serializers.IntegerField(write_only=True)
     author = UserSerializer(read_only=True)
 
     likes = AdLikeSerializer(many=True,read_only=True)
+    comments = AdCommentSerializer(many=True,read_only=True)
 
     # Дом детальная
     numbers_room = serializers.IntegerField(required=False)
-    total_area = serializers.IntegerField(required=False)
+    total_area = serializers.FloatField(required=False)
     floor = serializers.IntegerField(required=False)
     total_floor = serializers.IntegerField(required=False)
     year_construction = serializers.IntegerField(required=False)
@@ -147,6 +156,12 @@ class AdSerializer(serializers.ModelSerializer):
     communications = serializers.ListField(required=False)
     is_pledge = serializers.BooleanField(required=False)
     is_divisibility = serializers.BooleanField(required=False)
+
+    comment_count = serializers.SerializerMethodField(read_only=True)
+
+    def get_comment_count(self, obj):
+        count = len(obj.comments.all())
+        return count
 
 
     def create(self, validated_data):
@@ -230,7 +245,7 @@ class AdSerializer(serializers.ModelSerializer):
             except KeyError:
                 total_floor = None
 
-            detail = HomeDetail.objects.create(
+            detail = ApartmentDetail.objects.create(
                 numbers_room=numbers_room,
                 total_area=total_area,
                 floor=floor,
@@ -275,7 +290,7 @@ class AdSerializer(serializers.ModelSerializer):
         else:
             detail = None
 
-        instance = Ad.objects.create(
+        instance = Ad(
             title=validated_data['title'],
             location_text=validated_data['location_text'] or 'Место положение не указано',
             lat=validated_data['lat'] or 0,
@@ -284,7 +299,6 @@ class AdSerializer(serializers.ModelSerializer):
             ad_detail_type_id=validated_data['ad_detail_type_id'],
             ad_type_id=validated_data['ad_type_id'],
             city_id=validated_data['city_id'],
-            author_id=validated_data['author_id'],
             price=validated_data['price'],
             details=detail
         )
@@ -305,8 +319,4 @@ class ContentTypeSerializer(serializers.ModelSerializer):
 
 
 
-class AdCommentSerializer(serializers.ModelSerializer):
 
-    class Meta:
-        fields = ('__all__')
-        model = AdComments

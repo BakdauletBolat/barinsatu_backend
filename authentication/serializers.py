@@ -30,7 +30,8 @@ class UserLoginSerializer(TokenObtainPairSerializer):
 
 class UserSerializer(serializers.ModelSerializer):
 
-    user_type = UserTypeSerializer(required=False)
+    user_type = UserTypeSerializer(required=False,read_only=True)
+    user_type_id = serializers.IntegerField(required=False,write_only=True)
 
     avatar = serializers.ImageField(max_length=None, use_url=True, allow_null=True, required=False)
 
@@ -43,5 +44,5 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['id','name','surname','email','user_type','avatar','about','password']
+        fields = ['id','name','surname','email','user_type','avatar','about','password','user_type_id']
         extra_kwargs = {'password': {'write_only': True}}

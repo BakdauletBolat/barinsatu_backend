@@ -11,7 +11,7 @@ class AdType(models.Model):
     name = models.CharField(max_length=255)
 
     def __str__(self):
-        return self.name
+        return f"ID[{self.id}] - {self.name}"
 
     class Meta:
         verbose_name = 'Тип публикаций'
@@ -23,7 +23,7 @@ class AdDetailType(models.Model):
     name = models.CharField(max_length=255)
 
     def __str__(self):
-        return self.name
+        return f"ID[{self.id}] - {self.name}"
 
     class Meta:
         
@@ -35,7 +35,7 @@ class City(models.Model):
     name = models.CharField(max_length=255)
     
     def __str__(self):
-        return self.name
+        return f"ID[{self.id}] - {self.name}"
 
     class Meta:
         
@@ -47,7 +47,7 @@ class RentType(models.Model):
     name = models.CharField(max_length=255)
 
     def __str__(self):
-        return self.name
+        return f"ID[{self.id}] - {self.name}"
 
     class Meta:
         
@@ -60,7 +60,7 @@ class BuildingType(models.Model):
     name = models.CharField(max_length=255)
 
     def __str__(self):
-        return self.name
+        return f"ID[{self.id}] - {self.name}"
 
     class Meta:
         
@@ -72,7 +72,7 @@ class RepairType(models.Model):
     name = models.CharField(max_length=255)
 
     def __str__(self):
-        return self.name
+        return f"ID[{self.id}] - {self.name}"
 
     class Meta:
         
@@ -83,7 +83,7 @@ class RepairType(models.Model):
 class HomeDetail(models.Model):
 
     numbers_room = models.IntegerField(null=True,blank=True)
-    total_area = models.IntegerField(null=True,blank=True)
+    total_area = models.FloatField(null=True,blank=True)
     floor = models.IntegerField(null=True,blank=True)
     year_construction = models.IntegerField(null=True,blank=True)
     building_type = models.ForeignKey(BuildingType,on_delete=models.CASCADE,null=True,blank=True)
@@ -110,7 +110,7 @@ class Communications(models.Model):
 
 class ApartmentDetail(models.Model):
     numbers_room = models.IntegerField(null=True,blank=True)
-    total_area = models.IntegerField(null=True,blank=True)
+    total_area = models.FloatField(null=True,blank=True)
     floor = models.IntegerField(null=True,blank=True)
     total_floor = models.IntegerField(null=True,blank=True)
     year_construction = models.IntegerField(null=True,blank=True)
@@ -120,7 +120,7 @@ class ApartmentDetail(models.Model):
 
 class AreaDetail(models.Model):
     
-    total_area = models.IntegerField(null=True,blank=True)
+    total_area = models.FloatField(null=True,blank=True)
     is_pledge = models.BooleanField(default=0)
     is_divisibility = models.BooleanField(default=0)
     communications = models.ManyToManyField(Communications,blank=True)
@@ -189,6 +189,7 @@ class AdComments(models.Model):
 
     text = models.TextField()
     author = models.ForeignKey(User,on_delete=models.CASCADE,related_name='comments')
+    created_at = models.DateTimeField(auto_now_add=True,null=True,blank=True)
     ad = models.ForeignKey(Ad,on_delete=models.CASCADE,related_name='comments')
 
     class Meta:

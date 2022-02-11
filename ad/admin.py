@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Ad, AdDetailType, AdImage, AdLike,AdType, ApartmentDetail, AreaDetail,City,BuildingType, Communications,RepairType,RentType,HomeDetail
+from .models import Ad, AdComments, AdDetailType, AdImage, AdLike,AdType, ApartmentDetail, AreaDetail,City,BuildingType, Communications,RepairType,RentType,HomeDetail
 
 
 class AdImageTabularInline(admin.TabularInline):
@@ -34,3 +34,4 @@ class AdImageAdmin(admin.ModelAdmin):
     
 
 admin.site.register(AdImage,AdImageAdmin)
+admin.site.register(AdComments)

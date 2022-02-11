@@ -1,0 +1,65 @@
+[
+{
+  "model": "ad.communications",
+  "pk": 1,
+  "fields": {
+    "name": "Cвет"
+  }
+},
+{
+  "model": "ad.communications",
+  "pk": 2,
+  "fields": {
+    "name": "Вода"
+  }
+},
+{
+  "model": "ad.communications",
+  "pk": 3,
+  "fields": {
+    "name": "Газ"
+  }
+},
+{
+  "model": "ad.communications",
+  "pk": 4,
+  "fields": {
+    "name": "Телефон"
+  }
+},
+{
+  "model": "ad.communications",
+  "pk": 5,
+  "fields": {
+    "name": "Интернет"
+  }
+},
+{
+  "model": "ad.communications",
+  "pk": 6,
+  "fields": {
+    "name": "Канализация"
+  }
+},
+{
+  "model": "ad.communications",
+  "pk": 7,
+  "fields": {
+    "name": "Отопление"
+  }
+},
+{
+  "model": "ad.adtype",
+  "pk": 1,
+  "fields": {
+    "name": "Аренда"
+  }
+},
+{
+  "model": "ad.adtype",
+  "pk": 2,
+  "fields": {
+    "name": "Продажа"
+  }
+}
+]
