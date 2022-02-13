@@ -1,17 +1,20 @@
+
+import json
+from rest_framework.validators import ValidationError
 from django.http import JsonResponse
-from rest_framework.generics import ListCreateAPIView,RetrieveUpdateDestroyAPIView,RetrieveAPIView
+from rest_framework.generics import ListCreateAPIView,RetrieveUpdateDestroyAPIView,RetrieveAPIView,CreateAPIView
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.views import APIView
 from .permisions import AuthorPermission
-from authentication.models import User, UserType
+from authentication.models import Notification, Rating, User, UserType
 from django.contrib.auth.mixins import LoginRequiredMixin
-from authentication.serializers import UserLoginSerializer, UserSerializer, UserTypeSerializer
+from authentication.serializers import NotificicationSerializer, RatingSerializer, UserLoginSerializer, UserSerializer, UserTypeSerializer
 from rest_framework import status
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework.generics import ListAPIView
 from rest_framework.filters import OrderingFilter
 from django_filters.rest_framework import DjangoFilterBackend
-
+from rest_framework.permissions import IsAuthenticated
 
 def get_tokens_for_user(user):
     refresh = RefreshToken.for_user(user)
@@ -47,6 +50,80 @@ class UserCreateListView(ListCreateAPIView):
         return JsonResponse(data, status=status.HTTP_201_CREATED, headers=headers)
 
 
+class UserRateList(ListAPIView):
+    serializer_class = RatingSerializer
+    queryset = Rating.objects.all()
+
+    def get_queryset(self):
+        return super().get_queryset().filter(user_id=self.kwargs['pk'])
+
+class UserRateCreate(CreateAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = RatingSerializer
+    queryset = Rating.objects.all()
+
+    def perform_create(self, serializer):
+        instance = serializer.save(author=self.request.user)
+        return instance
+
+class NotificationListCreateView(APIView):
+    permission_classes = [IsAuthenticated]
+    def get(self,request):
+        notifcationList = Notification.objects.filter(user=request.user)
+        print(notifcationList)
+        return JsonResponse(NotificicationSerializer(notifcationList,many=True).data,safe=False)
+
+    def post(self,request,pk):
+        data = request.POST
+        print(data)
+        text = ''
+        if data.get('text') != None:
+            text = data['text']
+        else:
+            text = ''
+        users = User.objects.filter(user_type_id=pk)
+        for user in users:
+            Notification.objects.create(
+                text=text,
+                user=user,
+                author=request.user,
+                type_id=pk
+            )
+            print('saved')
+        
+        return JsonResponse({"response":True})
+
+class NotificationCreateView(APIView):
+    permission_classes = [IsAuthenticated]
+    def get(self,request):
+        notifcationList = Notification.objects.filter(user=request.user)
+        print(notifcationList)
+        return JsonResponse(NotificicationSerializer(notifcationList,many=True).data,safe=False)
+
+    def post(self,request):
+        data = json.loads(request.body)
+        text = ''
+        print(data)
+
+
+        try:
+             text = data['text']
+        except KeyError:
+            text = ''
+
+        if data['type_id'] == None and data['user_id'] == None:
+            raise ValidationError('Поля обязательны')
+
+        Notification.objects.create(
+            text=text,
+            user_id=data['user_id'],
+            author=request.user,
+            type_id=data['type_id']
+        )
+
+        
+        return JsonResponse({"response":True})
+
 class UserRetriveView(RetrieveAPIView):
     serializer_class = UserSerializer
     queryset = User.objects.all()
@@ -67,7 +144,7 @@ class UserListView(ListAPIView):
     serializer_class = UserSerializer
     queryset = User.objects.all()
     filter_backends = [OrderingFilter,DjangoFilterBackend]
-    filterset_fields = ['user_type_id']
+    filterset_fields = ['user_type']
     ordering_fields = ['id']
 
 

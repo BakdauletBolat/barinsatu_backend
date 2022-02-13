@@ -1,6 +1,6 @@
 from dataclasses import field
 from rest_framework import serializers
-from .models import User, UserType
+from .models import NotifcationType, Notification, Rating, User, UserType
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
 
@@ -28,6 +28,8 @@ class UserLoginSerializer(TokenObtainPairSerializer):
         data['user'] = UserSerializer(self.user).data
         return data
 
+
+
 class UserSerializer(serializers.ModelSerializer):
 
     user_type = UserTypeSerializer(required=False,read_only=True)
@@ -46,3 +48,31 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields = ['id','name','surname','email','user_type','avatar','about','password','user_type_id','phone']
         extra_kwargs = {'password': {'write_only': True}}
+
+    
+class RatingSerializer(serializers.ModelSerializer):
+
+    user = UserSerializer(read_only=True)
+    user_id = serializers.IntegerField(write_only=True)
+    author = UserSerializer(read_only=True)
+
+    class Meta:
+        model = Rating
+        fields =("__all__")
+    
+class NotifcationTypeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = NotifcationType
+        fields =("__all__")
+    
+class NotificicationSerializer(serializers.ModelSerializer):
+
+    user = UserSerializer(read_only=True)
+    user__id = serializers.IntegerField(write_only=True)
+    author = UserSerializer(read_only=True)
+    type = NotifcationTypeSerializer(read_only=True)
+    type_id = serializers.IntegerField(write_only=True)
+
+    class Meta:
+        model = Notification
+        fields =("__all__")
