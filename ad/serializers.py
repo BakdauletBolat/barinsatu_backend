@@ -37,6 +37,12 @@ class HomeDetailSerializer(serializers.ModelSerializer):
     building_type = BuildingTypeSerializer()
     repair_type = RepairTypeSerializer()
 
+    total_area = serializers.SerializerMethodField()
+
+    def get_total_area(self,obj):
+
+        return f"{obj.total_area} км²"
+
     class Meta:
 
         model = HomeDetail
@@ -46,6 +52,18 @@ class HomeDetailSerializer(serializers.ModelSerializer):
 class AreaDetailSerializer(serializers.ModelSerializer):
 
     communications = CommunicationSerializer(many=True)
+
+    total_area = serializers.SerializerMethodField()
+
+    def get_total_area(self,obj):
+
+        if obj.unit_of_measure == 0:
+            return f"{obj.total_area} сот"
+        
+        if obj.unit_of_measure == 1:
+            return f"{obj.total_area} Га"
+
+        return f"{obj.total_area}"
 
     class Meta:
 
@@ -57,6 +75,12 @@ class ApartmentSerializer(serializers.ModelSerializer):
 
     building_type = BuildingTypeSerializer()
     repair_type = RepairTypeSerializer()
+
+    total_area = serializers.SerializerMethodField()
+
+    def get_total_area(self,obj):
+
+        return f"{obj.total_area} км²"
 
     class Meta:
         model = ApartmentDetail
@@ -145,6 +169,12 @@ class AdSerializer(serializers.ModelSerializer):
     likes = AdLikeSerializer(many=True,read_only=True)
     comments = AdCommentSerializer(many=True,read_only=True)
 
+    UNIT = (
+        (0, 'Сот'),
+        (1, 'Га')
+    )
+    
+
     # Дом детальная
     numbers_room = serializers.IntegerField(required=False)
     total_area = serializers.FloatField(required=False)
@@ -156,8 +186,11 @@ class AdSerializer(serializers.ModelSerializer):
     communications = serializers.ListField(required=False)
     is_pledge = serializers.BooleanField(required=False)
     is_divisibility = serializers.BooleanField(required=False)
+    unit_of_measure = serializers.IntegerField(default=0,required=False)
 
     comment_count = serializers.SerializerMethodField(read_only=True)
+
+
 
     def get_comment_count(self, obj):
         count = len(obj.comments.all())
@@ -199,6 +232,11 @@ class AdSerializer(serializers.ModelSerializer):
                 building_type_id = validated_data.pop('building_type_id')
             except KeyError:
                 building_type_id = None
+
+            try:
+                unit_of_measure = validated_data.pop('unit_of_measure')
+            except KeyError:
+                unit_of_measure = 0
 
             detail = HomeDetail.objects.create(
                 numbers_room=numbers_room,
@@ -250,6 +288,7 @@ class AdSerializer(serializers.ModelSerializer):
                 total_area=total_area,
                 floor=floor,
                 total_floor=total_floor,
+                
                 year_construction=year_construction,
                 repair_type_id=repair_type_id,
                 building_type_id=building_type_id,
@@ -275,6 +314,7 @@ class AdSerializer(serializers.ModelSerializer):
             detail = AreaDetail.objects.create(
                 total_area=total_area,
                 is_pledge=is_pledge,
+                unit_of_measure=unit_of_measure,
                 is_divisibility=is_divisibility,
             )
 

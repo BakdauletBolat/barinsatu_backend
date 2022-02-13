@@ -119,9 +119,15 @@ class ApartmentDetail(models.Model):
     ad = GenericRelation('Ad',related_query_name='apartmentdetail')
 
 class AreaDetail(models.Model):
+
+    UNIT = (
+        (0, 'Сот'),
+        (1, 'Га')
+    )
     
     total_area = models.FloatField(null=True,blank=True)
     is_pledge = models.BooleanField(default=0)
+    unit_of_measure = models.IntegerField(default=0, choices=UNIT)
     is_divisibility = models.BooleanField(default=0)
     communications = models.ManyToManyField(Communications,blank=True)
     ad = GenericRelation('Ad',related_query_name='areadetail')
@@ -145,6 +151,7 @@ class Ad(models.Model):
     ad_type = models.ForeignKey(AdType,on_delete=models.CASCADE,related_name='ads')
     city = models.ForeignKey(City,on_delete=models.CASCADE,related_name='ads')
     rent_time = models.ForeignKey(RentType,on_delete=models.CASCADE,null=True,blank=True,related_name='ads')
+
 
     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE,related_name='ads',null=True,blank=True)
     object_id = models.PositiveIntegerField(null=True,blank=True)
