@@ -233,10 +233,7 @@ class AdSerializer(serializers.ModelSerializer):
             except KeyError:
                 building_type_id = None
 
-            try:
-                unit_of_measure = validated_data.pop('unit_of_measure')
-            except KeyError:
-                unit_of_measure = 0
+           
 
             detail = HomeDetail.objects.create(
                 numbers_room=numbers_room,
@@ -308,6 +305,11 @@ class AdSerializer(serializers.ModelSerializer):
                 is_divisibility = validated_data.pop('is_divisibility')
             except KeyError:
                 is_divisibility = 0
+            
+            try:
+                unit_of_measure = validated_data.pop('unit_of_measure')
+            except KeyError:
+                unit_of_measure = 0
 
             
             
