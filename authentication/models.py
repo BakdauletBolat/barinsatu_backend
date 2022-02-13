@@ -1,6 +1,4 @@
 
-from tabnanny import verbose
-from tkinter.tix import Tree
 from django.contrib.auth.models import AbstractBaseUser
 from django.db import models
 from django.utils import timezone
