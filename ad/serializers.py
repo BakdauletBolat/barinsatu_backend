@@ -37,9 +37,9 @@ class HomeDetailSerializer(serializers.ModelSerializer):
     building_type = BuildingTypeSerializer()
     repair_type = RepairTypeSerializer()
 
-    total_area = serializers.SerializerMethodField()
+    total_area_string = serializers.SerializerMethodField()
 
-    def get_total_area(self,obj):
+    def get_total_area_string(self,obj):
 
         return f"{obj.total_area} км²"
 
@@ -53,9 +53,9 @@ class AreaDetailSerializer(serializers.ModelSerializer):
 
     communications = CommunicationSerializer(many=True)
 
-    total_area = serializers.SerializerMethodField()
+    total_area_string = serializers.SerializerMethodField()
 
-    def get_total_area(self,obj):
+    def get_total_area_string(self,obj):
 
         if obj.unit_of_measure == 0:
             return f"{obj.total_area} сот"
@@ -76,9 +76,9 @@ class ApartmentSerializer(serializers.ModelSerializer):
     building_type = BuildingTypeSerializer()
     repair_type = RepairTypeSerializer()
 
-    total_area = serializers.SerializerMethodField()
+    total_area_string = serializers.SerializerMethodField()
 
-    def get_total_area(self,obj):
+    def get_total_area_string(self,obj):
 
         return f"{obj.total_area} км²"
 
