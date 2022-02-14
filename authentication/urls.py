@@ -4,7 +4,7 @@ from rest_framework_simplejwt.views import (
 )
 from .views import (NotificationCreateView, NotificationListCreateView, UserCreateListView, UserMe,UserLoginView,UserRetriveView,
                     UserTypeListView,UserRetrieveUpdateDestroyAPIView,UserListView,
-                    UserRateCreate,UserRateList)
+                    UserRateCreate,UserRateList,NotifcationReadView)
 from django.urls import path
 
 urlpatterns = [
@@ -19,6 +19,7 @@ urlpatterns = [
     path('rate/',UserRateCreate.as_view()),
     path('rate-list/<int:pk>/',UserRateList.as_view()),
     path('notifications/',NotificationListCreateView.as_view()),
-    path('notification-auto-create/<int:pk>',NotificationListCreateView.as_view()),
+    path('notification-auto-create/<int:pk>/',NotificationListCreateView.as_view()),
+    path('notification-read-all/',NotifcationReadView.as_view()),
     path('notification-create/',NotificationCreateView.as_view())
 ]

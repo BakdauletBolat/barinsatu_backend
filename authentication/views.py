@@ -93,11 +93,21 @@ class NotificationListCreateView(APIView):
         
         return JsonResponse({"response":True})
 
+
+class NotifcationReadView(APIView):
+    permission_classes = [IsAuthenticated]
+    def get(self,request):
+        notifcationList = Notification.objects.filter(user=request.user)
+        for notifcation in notifcationList:
+            notifcation.is_readed = True
+            notifcation.save()
+            
+        return JsonResponse({"readed":True})
+
 class NotificationCreateView(APIView):
     permission_classes = [IsAuthenticated]
     def get(self,request):
         notifcationList = Notification.objects.filter(user=request.user)
-        print(notifcationList)
         return JsonResponse(NotificicationSerializer(notifcationList,many=True).data,safe=False)
 
     def post(self,request):
