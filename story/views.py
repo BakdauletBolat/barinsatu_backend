@@ -60,7 +60,7 @@ class LikeStory(APIView):
     def get(self,request,pk):
         try:
             like = StoryLike()
-            like.ad = get_object_or_404(Story, pk=pk)
+            like.story = get_object_or_404(Story, pk=pk)
             like.user = request.user
             like.save()
             print(like.isLiked)
@@ -68,8 +68,8 @@ class LikeStory(APIView):
             return Response(likeS)
 
         except IntegrityError as e:
-            ad = Story.objects.get(id=pk)
-            like = StoryLike.objects.get(user=request.user,ad=ad)
+            story = Story.objects.get(id=pk)
+            like = StoryLike.objects.get(user=request.user,story=story)
             if like.isLiked:
                 like.isLiked = False
             else:
