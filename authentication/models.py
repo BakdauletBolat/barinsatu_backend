@@ -96,6 +96,7 @@ class Notification(models.Model):
     user = models.ForeignKey(User,related_name='notifcations',on_delete=models.CASCADE)
     author = models.ForeignKey(User,related_name='my_notifcations',on_delete=models.CASCADE)
     text = models.TextField(null=True,blank=True)
+    is_readed = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True,null=True,blank=True)
     updated_at = models.DateTimeField(auto_now=True,null=True,blank=True)
 
