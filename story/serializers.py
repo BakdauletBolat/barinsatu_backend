@@ -11,6 +11,8 @@ class IsLikedSerializer(ListSerializer):
 
 class StoryLikeSerializer(ModelSerializer):
 
+    user = UserSerializer(read_only=True)
+
     class Meta:
         fields = ('__all__')
         model = StoryLike
@@ -18,6 +20,8 @@ class StoryLikeSerializer(ModelSerializer):
 
 
 class StoryCommentSerializer(ModelSerializer):
+
+    author = UserSerializer(read_only=True)
    
 
     class Meta:
