@@ -28,12 +28,17 @@ class UserLoginSerializer(TokenObtainPairSerializer):
         data['user'] = UserSerializer(self.user).data
         return data
 
-
+    
 
 class UserSerializer(serializers.ModelSerializer):
 
     user_type = UserTypeSerializer(required=False,read_only=True)
     user_type_id = serializers.IntegerField(required=False,write_only=True)
+
+    ratings_count = serializers.SerializerMethodField(read_only=True)
+
+    def get_ratings_count(self,obj):
+        return obj.ratings.all().length
 
     avatar = serializers.ImageField(max_length=None, use_url=True, allow_null=True, required=False)
 
@@ -46,7 +51,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['id','name','surname','email','user_type','avatar','about','password','user_type_id','phone']
+        fields = ['id','name','surname','email','user_type','avatar','about','password','user_type_id','phone','ratings_count']
         extra_kwargs = {'password': {'write_only': True}}
 
     
