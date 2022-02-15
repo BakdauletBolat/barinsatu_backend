@@ -35,7 +35,7 @@ class UserSerializer(serializers.ModelSerializer):
     user_type = UserTypeSerializer(required=False,read_only=True)
     user_type_id = serializers.IntegerField(required=False,write_only=True)
 
-    ratings_count = serializers.SerializerMethodField(read_only=True)
+    ratings_count = serializers.SerializerMethodField()
 
     def get_ratings_count(self,obj):
         return obj.ratings.all().length
