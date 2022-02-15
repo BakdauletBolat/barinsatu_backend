@@ -41,7 +41,7 @@ class HomeDetailSerializer(serializers.ModelSerializer):
 
     def get_total_area_string(self,obj):
 
-        return f"{obj.total_area} км²"
+        return f"{obj.total_area} кв²"
 
     class Meta:
 
@@ -80,7 +80,7 @@ class ApartmentSerializer(serializers.ModelSerializer):
 
     def get_total_area_string(self,obj):
 
-        return f"{obj.total_area} км²"
+        return f"{obj.total_area} кв²"
 
     class Meta:
         model = ApartmentDetail
