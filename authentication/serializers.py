@@ -38,7 +38,7 @@ class UserSerializer(serializers.ModelSerializer):
     ratings_count = serializers.SerializerMethodField()
 
     def get_ratings_count(self,obj):
-        return obj.ratings.all().length
+        return len(obj.ratings.all())
 
     avatar = serializers.ImageField(max_length=None, use_url=True, allow_null=True, required=False)
 
