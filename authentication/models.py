@@ -75,7 +75,7 @@ class Rating(models.Model):
     text = models.TextField(null=True,blank=True)
     created_at = models.DateTimeField(auto_now_add=True,null=True,blank=True)
     updated_at = models.DateTimeField(auto_now=True,null=True,blank=True)
-    ball = models.FloatField(null=True,blank=True)
+    ball = models.FloatField(null=True,blank=True,default=3)
 
     class Meta:
         verbose_name = 'Рейтинг'
