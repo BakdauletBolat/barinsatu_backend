@@ -13,10 +13,11 @@ def flutter_redirect(request, resource):
     return serve(request, resource, FLUTTER_WEB_APP)
 
 urlpatterns = [
+     path('api/',include('api.urls')),
+    path('admin/', admin.site.urls),
     path('', lambda r: flutter_redirect(r, 'index.html')),
     path('<path:resource>', flutter_redirect),
-    path('api/',include('api.urls')),
-    path('admin/', admin.site.urls),
+   
 ]
 
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
