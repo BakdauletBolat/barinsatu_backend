@@ -89,7 +89,7 @@ class AdListMapView(ListAPIView):
     filter_backends = [OrderingFilter]
     ordering_fields = ['id']
     pagination_class = LimitOffsetPagination
-    pagination_class.default_limit =1000
+    pagination_class.default_limit =500
 
 
 class AdCreateView(CreateAPIView):
