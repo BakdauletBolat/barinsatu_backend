@@ -149,6 +149,12 @@ class AdCommentSerializer(serializers.ModelSerializer):
         read_only_fields = ('author',)
         model = AdComments
 
+class MarkerAdSerializer(serializers.ModelSerializer):
+    class Meta:
+        fields = ('lat','lng')
+        model = Ad
+    
+
 class AdSerializer(serializers.ModelSerializer):
 
     details = AdObjectRelatedField(read_only=True)
