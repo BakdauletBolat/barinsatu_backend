@@ -146,6 +146,7 @@ class Ad(models.Model):
     title = models.CharField(max_length=255)
     description = models.TextField()
     price = models.PositiveBigIntegerField()
+    views = models.BigIntegerField(default=0)
 
     ad_detail_type = models.ForeignKey(AdDetailType,on_delete=models.CASCADE,null=True,blank=True,related_name='ads')
     ad_type = models.ForeignKey(AdType,on_delete=models.CASCADE,related_name='ads')

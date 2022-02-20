@@ -53,6 +53,16 @@ class CommentCreateView(CreateAPIView):
         )
         return instance
 
+
+class ViewStory(APIView):
+    def get(self,request,pk):
+        try:
+            story = get_object_or_404(Story, pk=pk)
+            story.views += 1
+            story.save()
+        except IntegrityError as e:
+            print(e)
+
 class LikeStory(APIView):
 
     permission_classes = [IsAuthenticated] 

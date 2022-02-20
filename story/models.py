@@ -9,6 +9,7 @@ class Story(models.Model):
     thumb = models.ImageField(upload_to='StoriesThumbs/',null=True,blank=True)
     created_at = models.DateTimeField(auto_now_add=True,null=True,blank=True)
     updated_at = models.DateTimeField(auto_now=True,null=True,blank=True)
+    views = models.BigIntegerField(default=0)
     author = models.ForeignKey(User, on_delete=models.CASCADE,related_name='stories')
 
     def __str__(self) -> str:

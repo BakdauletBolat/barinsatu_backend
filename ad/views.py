@@ -144,6 +144,18 @@ class CommentCreateView(CreateAPIView):
         )
         return instance
 
+
+
+class ViewAd(APIView):
+    def get(self,request,pk):
+        try:
+            ad = get_object_or_404(Ad, pk=pk)
+            ad.views += 1
+            ad.save()
+        except IntegrityError as e:
+            print(e)
+
+
 class LikeAd(APIView):
 
     permission_classes = [IsAuthenticated] 
