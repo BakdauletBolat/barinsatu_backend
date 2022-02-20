@@ -4,11 +4,11 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 
 from authentication.serializers import UserSerializer
 from .models import Ad, AdComments, AdDetailType, AdImage, AdLike, AdType, BuildingType,City, Communications, RepairType
-from rest_framework.generics import ListCreateAPIView,ListAPIView,CreateAPIView,RetrieveUpdateDestroyAPIView
+from rest_framework.generics import ListCreateAPIView,ListAPIView,CreateAPIView,RetrieveUpdateDestroyAPIView,RetrieveAPIView
 from rest_framework.views import APIView
 from .serializers import (AdCommentSerializer, AdLikeSerializer, AdSerializer, AdTypeSerializer, 
                          BuildingTypeSerializer, CitySerializer, CommunicationSerializer, ContentTypeSerializer,
-                         AdDetailTypeSerializer, RepairTypeSerializer)
+                         AdDetailTypeSerializer, RepairTypeSerializer,MarkerAdSerializer)
 from django.contrib.contenttypes.models import ContentType
 from rest_framework.filters import OrderingFilter
 from rest_framework import status
@@ -84,10 +84,12 @@ class AdListView(ListAPIView):
 
 
 class AdListMapView(ListAPIView):
-    serializer_class = AdSerializer
+    serializer_class = MarkerAdSerializer
     queryset = Ad.objects.all()
-
-
+    filter_backends = [OrderingFilter]
+    ordering_fields = ['id']
+    pagination_class = LimitOffsetPagination
+    pagination_class.default_limit =500
 
 
 class AdCreateView(CreateAPIView):
@@ -114,6 +116,16 @@ class AdRetrieveUpdateDestroyAPIView(LoginRequiredMixin,RetrieveUpdateDestroyAPI
     serializer_class = AdSerializer
     queryset = Ad.objects.all()  
     permission_classes = [AuthorPermission,IsAuthenticated] 
+
+
+class AdSingleView(RetrieveAPIView):
+    serializer_class = AdSerializer
+    queryset = Ad.objects.all()
+
+
+class MarkerAdsView(RetrieveAPIView):
+    serializer_class = AdSerializer
+    queryset = Ad.objects.all()
 
 
 class ContentTypeListCreateView(ListAPIView):
