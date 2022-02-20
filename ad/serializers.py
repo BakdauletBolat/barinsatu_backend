@@ -150,8 +150,9 @@ class AdCommentSerializer(serializers.ModelSerializer):
         model = AdComments
 
 class MarkerAdSerializer(serializers.ModelSerializer):
+
     class Meta:
-        fields = ('lat','lng')
+        fields = ('id','lat','lng','title')
         model = Ad
     
 
