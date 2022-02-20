@@ -123,11 +123,6 @@ class AdSingleView(RetrieveAPIView):
     queryset = Ad.objects.all()
 
 
-class MarkerAdsView(RetrieveAPIView):
-    serializer_class = AdSerializer
-    queryset = Ad.objects.all()
-
-
 class ContentTypeListCreateView(ListAPIView):
     
     serializer_class = ContentTypeSerializer
