@@ -159,8 +159,10 @@ class ViewAd(APIView):
             ad = get_object_or_404(Ad, id=pk)
             ad.views += 1
             ad.save()
+            return JsonResponse({'status':'ok'})
         except IntegrityError as e:
             print(e)
+            return JsonResponse({'status':'failed'})
 
 
 class LikeAd(APIView):
