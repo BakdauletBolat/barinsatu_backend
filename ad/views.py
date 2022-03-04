@@ -156,7 +156,7 @@ class CommentCreateView(CreateAPIView):
 class ViewAd(APIView):
     def get(self,request,pk):
         try:
-            ad = get_object_or_404(Ad, pk=pk)
+            ad = get_object_or_404(Ad, id=pk)
             ad.views += 1
             ad.save()
         except IntegrityError as e:

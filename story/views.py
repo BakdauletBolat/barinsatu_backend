@@ -50,7 +50,7 @@ class CommentCreateView(CreateAPIView):
 class ViewStory(APIView):
     def get(self,request,pk):
         try:
-            story = get_object_or_404(Story, pk=pk)
+            story = get_object_or_404(Story, id=pk)
             story.views += 1
             story.save()
         except IntegrityError as e:
