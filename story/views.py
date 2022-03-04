@@ -1,4 +1,5 @@
 from django.db import IntegrityError
+from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, render
 from rest_framework.generics import ListCreateAPIView
 from .models import Story, StoryComments, StoryLike
@@ -53,8 +54,10 @@ class ViewStory(APIView):
             story = get_object_or_404(Story, id=pk)
             story.views += 1
             story.save()
+            return JsonResponse({'status':'ok'})
         except IntegrityError as e:
             print(e)
+            return JsonResponse({'status':'failed'})
 
 class LikeStory(APIView):
 
