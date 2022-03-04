@@ -8,7 +8,7 @@ urlpatterns = [
     path('markers/',AdListMapView.as_view()),
     path('<int:pk>/',AdSingleView.as_view()),
     path('map/',AdListMapView.as_view()),
-    path('view/<int:pk>/',ViewAd.as_view),
+    path('view/<int:pk>/',ViewAd.as_view()),
     path('create/',AdCreateView.as_view()),
     path('edit-delete/<int:pk>/',AdRetrieveUpdateDestroyAPIView.as_view()),
     path('type/',AdTypeListView.as_view()),
