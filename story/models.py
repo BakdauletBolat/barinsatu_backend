@@ -10,6 +10,7 @@ class Story(models.Model):
     created_at = models.DateTimeField(auto_now_add=True,null=True,blank=True)
     updated_at = models.DateTimeField(auto_now=True,null=True,blank=True)
     views = models.BigIntegerField(default=0)
+    is_archive = models.BooleanField(default=False)
     author = models.ForeignKey(User, on_delete=models.CASCADE,related_name='stories')
 
     def __str__(self) -> str:

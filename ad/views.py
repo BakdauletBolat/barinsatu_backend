@@ -75,12 +75,23 @@ class AdFilter(FilterSet):
 
 class AdListView(ListAPIView):
     serializer_class = AdSerializer
-    queryset = Ad.objects.all()
+    queryset = Ad.objects.filter(is_archive=False)
     filter_backends = [OrderingFilter,DjangoFilterBackend]
     filter_class = AdFilter
     ordering_fields = ['id']
     pagination_class = LimitOffsetPagination
     pagination_class.default_limit =5
+
+
+class AdArchiveView(APIView):
+
+    def get(self,request,pk):
+
+        ad = get_object_or_404(Ad,id=pk)
+        ad.is_archive = True
+        ad.save()
+
+        return JsonResponse({'status': 'archived ad '+pk})
 
 
 class AdListMapView(ListAPIView):
@@ -138,6 +149,7 @@ class CommentListView(ListAPIView):
         ad_id = kwargs['pk']
         serializer = self.get_serializer(self.get_queryset().filter(ad_id=ad_id), many=True)
         return JsonResponse(serializer.data,safe=False)
+
 
 class CommentCreateView(CreateAPIView):
 

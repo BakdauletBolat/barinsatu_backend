@@ -16,10 +16,21 @@ class StoryListView(ListCreateAPIView):
     
     serializer_class = StorySerilizer
     
-    queryset = Story.objects.all()
+    queryset = Story.objects.filter(is_archive=False)
     filterset_fields = ['author']
     filter_backends = [OrderingFilter,DjangoFilterBackend]
     ordering_fields = ['id']
+
+
+class StoryArchiveView(APIView):
+
+    def get(self,request,pk):
+
+        ad = get_object_or_404(Story,id=pk)
+        ad.is_archive = True
+        ad.save()
+
+        return JsonResponse({'status': 'archived story '+pk})
 
 
 

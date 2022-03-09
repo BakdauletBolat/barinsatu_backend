@@ -161,6 +161,7 @@ class Ad(models.Model):
     location_text = models.CharField(max_length=255,null=True,blank=True)
     lat = models.FloatField(null=True,blank=True)
     lng = models.FloatField(null=True,blank=True)
+    is_archive = models.BooleanField(default=False)
 
     created_at = models.DateTimeField(auto_now_add=True,null=True,blank=True)
     updated_at = models.DateTimeField(auto_now=True,null=True,blank=True)
