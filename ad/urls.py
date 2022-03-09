@@ -2,9 +2,10 @@ from django.urls import path
 from .views import (AdCreateView, AdListView, CommunicationsListView,ContentTypeListCreateView,AdTypeListView,
                    AdDetailTypeListView,CityListView,CommentListView,CommentCreateView,
                    BuildingTypeListView,RepairTypeListView,AdRetrieveUpdateDestroyAPIView,
-                   LikeAd,AdListMapView,ViewAd,AdListMapView,AdSingleView)
+                   LikeAd,AdListMapView,ViewAd,AdListMapView,AdSingleView,AdArchiveView)
 urlpatterns = [
     path('',AdListView.as_view()),
+    path('archive/<int:pk>/',AdArchiveView.as_view()),
     path('markers/',AdListMapView.as_view()),
     path('<int:pk>/',AdSingleView.as_view()),
     path('map/',AdListMapView.as_view()),
