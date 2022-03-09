@@ -1,5 +1,6 @@
 
 import json
+from django.shortcuts import get_object_or_404
 from rest_framework.validators import ValidationError
 from django.http import JsonResponse
 from rest_framework.generics import ListCreateAPIView,RetrieveUpdateDestroyAPIView,RetrieveAPIView,CreateAPIView
@@ -15,6 +16,8 @@ from rest_framework.generics import ListAPIView
 from rest_framework.filters import OrderingFilter
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.permissions import IsAuthenticated
+from ad.serializers import AdSerializer
+from ad.models import Ad
 
 def get_tokens_for_user(user):
     refresh = RefreshToken.for_user(user)
@@ -48,6 +51,21 @@ class UserCreateListView(ListCreateAPIView):
         data = get_tokens_for_user(user)
 
         return JsonResponse(data, status=status.HTTP_201_CREATED, headers=headers)
+
+
+class UserFavoriteView(ListAPIView):
+
+    serializer_class = AdSerializer
+
+    def get_queryset(self):
+        id = self.kwargs['pk']
+        user = get_object_or_404(User,id=id)
+        print(user)
+        ad_favorites = []
+        for favorite in user.likes.all():
+            print(favorite)
+            ad_favorites.append(favorite.ad)
+        return ad_favorites
 
 
 class UserRateList(ListAPIView):

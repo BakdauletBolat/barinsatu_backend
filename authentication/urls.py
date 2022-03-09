@@ -4,13 +4,14 @@ from rest_framework_simplejwt.views import (
 )
 from .views import (NotificationCreateView, NotificationListCreateView, UserCreateListView, UserMe,UserLoginView,UserRetriveView,
                     UserTypeListView,UserRetrieveUpdateDestroyAPIView,UserListView,
-                    UserRateCreate,UserRateList,NotifcationReadView)
+                    UserRateCreate,UserRateList,NotifcationReadView,UserFavoriteView)
 from django.urls import path
 
 urlpatterns = [
     path('token/', UserLoginView.as_view(), name='token_obtain_pair'),
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('register/',UserCreateListView.as_view()),
+    path('favorites/<int:pk>/',UserFavoriteView.as_view()),
     path('update-delete/<int:pk>/',UserRetrieveUpdateDestroyAPIView.as_view()),
     path('profile/<int:pk>/',UserRetriveView.as_view()),
     path('users/',UserListView.as_view()),
