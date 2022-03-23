@@ -151,8 +151,17 @@ class AdCommentSerializer(serializers.ModelSerializer):
 
 class MarkerAdSerializer(serializers.ModelSerializer):
 
+    image = serializers.SerializerMethodField()
+
+
+    def get_image(self,obj):
+        if (len(obj.images.all())>0):
+            return AdImageSerializer(obj.images.first()).data
+        else:
+            return None
+
     class Meta:
-        fields = ('id','lat','lng','title')
+        fields = ('id','lat','lng','title','price','image')
         model = Ad
     
 

@@ -97,8 +97,9 @@ class AdArchiveView(APIView):
 class AdListMapView(ListAPIView):
     serializer_class = MarkerAdSerializer
     queryset = Ad.objects.all()
-    filter_backends = [OrderingFilter]
-    ordering_fields = ['id']
+    filter_backends = [OrderingFilter,DjangoFilterBackend]
+    ordering_fields = ['id','price']
+    filter_fields = ('ad_type','ad_detail_type')
     pagination_class = LimitOffsetPagination
     pagination_class.default_limit =500
 
