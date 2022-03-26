@@ -55,6 +55,7 @@ class AdFilter(FilterSet):
         fields = {
             'ad_type': ['exact'],
             'author': ['exact'],
+            'city': ['exact'],
             'ad_detail_type': ['exact'],
             'price': ['range'],
             'homedetail__numbers_room': ['range'],
@@ -96,12 +97,12 @@ class AdArchiveView(APIView):
 
 class AdListMapView(ListAPIView):
     serializer_class = MarkerAdSerializer
-    queryset = Ad.objects.all()
+    queryset = Ad.objects.filter(is_archive=False)
     filter_backends = [OrderingFilter,DjangoFilterBackend]
     ordering_fields = ['id','price']
     filter_fields = ('ad_type','ad_detail_type')
     pagination_class = LimitOffsetPagination
-    pagination_class.default_limit =500
+    pagination_class.default_limit = 500
 
 
 class AdCreateView(CreateAPIView):
